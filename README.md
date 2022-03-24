@@ -4,9 +4,26 @@ languages.
 
 ## NOTE ON THIS VERSION OF THE API
 
-This exampel is currently just intended to enable the user to check they have
-the environment set up correctly. If you can run the app and view the example
-API then later version of this code will also work.
+This example is currently work in progress. More endpoints will be added.
+
+The current API includes the endpoints below:
+
+```
+/api/v1/wallet/create
+/api/v1/wallet/balance
+/api/v1/wallet/new-address
+```
+
+There are also a few test endpoints for permissions:
+
+```
+/api/v1/example and /api/v1/example_no_auth
+/api/v1/example_auth
+```
+
+You can add more endpoints by wrapping the functions in the `gdk_wallet` class
+within the GDKWallet class and making those callable from the API routes
+provided through `api.py`.
 
 ## Installation and dependancies
 
@@ -41,8 +58,11 @@ The 'cp' number refers to the python version you have.
 For example, to install GDK on Linux with Python 3.9.*, download and pip install the .whl file:
 pip install greenaddress-0.0.50-cp39-cp39-linux_x86_64.whl
 GDK README and reference documentation:
-https://github.com/Blockstream/gdk
-https://gdk.readthedocs.io/en/latest/
+
+[https://github.com/Blockstream/gdk](https://github.com/Blockstream/gdk)
+
+[https://gdk.readthedocs.io/en/latest/](https://gdk.readthedocs.io/en/latest/)
+
 
 ```
 pip install greenaddress-0.0.50-cp39-cp39-linux_x86_64.whl
@@ -57,14 +77,43 @@ python api.py
 
 API (debug mode) for our example API call is available if you visit:
 
-http://127.0.0.1:5000/api/v1/example
+http://127.0.0.1:5000/api/v1/example_no_auth
 
-Visiting the web page above makes an API call to the `api/v1/example` route,
-which calls GDK and creates a new wallet and returns the GAID as JSON.
+Visiting the web page above makes an API call to the `api/v1/example_no_auth`
+route, which calls GDK and creates a new wallet and returns the GAID as JSON.
 
 The API should be callable via NodeJS etc by making the API call.
 
-You can protect the API by requiring an authorization token in any request's
-header. A later version of this code will show how that can be done, as well
-as implementing all the API calls needed to manage an AMP wallet over an API
-using GDK.
+Permission to cal the API is protected by the API requiring an authorization
+token in the request's header. Set these within `config.py` and add more
+permission roles in `api.py` if nedded and include the token in `config.py`.
+Only get and post permissions are included here.
+
+## Adding more GDK function calls yourself
+
+Add new calls to GDKWrapper and make calls to methods in the `gdk_wallet` class.
+
+If the method does not exist in `gdk_wallet` class and is available through the
+GDK code you will need to add it yourself first. GDK README and reference
+documentation:
+
+[https://github.com/Blockstream/gdk](https://github.com/Blockstream/gdk)
+
+[https://gdk.readthedocs.io/en/latest/](https://gdk.readthedocs.io/en/latest/)
+
+## Configuration for Liquid environment
+
+In config.py, edit the NETWORK_NAME variable's value to switch between test and
+live Liquid networks.
+
+## Testing
+
+You can run the API and separately call the `tester.py` file from the command
+line:
+
+```
+python tester.py
+```
+
+The test file will sign into a wallet that has already been created using its
+mnemonic and get the wallet's balance and a new address.

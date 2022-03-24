@@ -1,46 +1,57 @@
 import json
-from random import randint
 
+import flask
 import greenaddress as gdk
+
+from config import Config
+
+app = flask.Flask(__name__)
+app.config.from_object(Config)
 
 
 class NewWallet:
-    def __init__(self, pin, encrypted_pin_data, gaid):
-        self.pin = pin
-        self.encrypted_pin_data = encrypted_pin_data
+    def __init__(self, gaid, mnemonic):
         self.gaid = gaid
+        self.mnemonic = mnemonic
 
 
 class GDKWrapper:
-
     def create_wallet():
         try:
             gdk.init({})
         except:
-            print('ok - can only be called once')
+            pass
         wallet = gdk_wallet.create_new_wallet(create_with_2fa_enabled=False, mnemonic=None)
         mnemonic = wallet.mnemonic
-        print(f'\nMnemonic for new investor: {mnemonic}')
+        print(f'\nMnemonic for new wallet: {mnemonic}')
         wallet = gdk_wallet.login_with_mnemonic(mnemonic)
-        # TODO - another way to generate a pin needed?
-        pin_value = ''
-        for _ in range(6):
-            pin_value = pin_value + str(randint(0, 9))
-        pin = int(pin_value)
-        encrypted_pin_data = wallet.set_pin(mnemonic, pin)
-        wallet.login_with_pin(pin, encrypted_pin_data)
         gaid = wallet.gaid
-        new_wallet = NewWallet(pin, encrypted_pin_data, gaid)
+        new_wallet = NewWallet(gaid, mnemonic)
         return new_wallet
 
 
-    def sign_in_with_pin_data(pin, encrypted_pin_data):
+    def get_balance(mnemonic):
         try:
             gdk.init({})
         except:
-            print('ok - can only be called once')
-        wallet = gdk_wallet.login_with_pin(pin, encrypted_pin_data)
-        return wallet
+            pass
+        wallet = gdk_wallet.login_with_mnemonic(mnemonic)
+        # Test network L-BTC:
+        # https://blockstream.info/liquidtestnet/asset/144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49
+        # Live network L-BTC:
+        # https://blockstream.info/liquid/asset/6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d
+        balance = wallet.get_balance()
+        return balance
+
+
+    def get_new_address(mnemonic):
+        try:
+            gdk.init({})
+        except:
+            pass
+        wallet = gdk_wallet.login_with_mnemonic(mnemonic)
+        address = wallet.get_new_address()
+        return address
 
 
 class gdk_wallet:
@@ -91,8 +102,7 @@ class gdk_wallet:
 
     """Don't use to instantiate object, use create_new_wallet, login_with_*"""
     def __init__(self):
-        # TODO - load from config
-        self.NETWORK_NAME = 'testnet-liquid'
+        self.NETWORK_NAME = app.config['NETWORK_NAME']
         # 2of2_no_recovery is the account type used by Blockstream AMP.
         # Do not change this value!
         self.AMP_ACCOUNT_TYPE = '2of2_no_recovery'
