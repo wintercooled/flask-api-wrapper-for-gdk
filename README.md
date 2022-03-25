@@ -131,3 +131,5 @@ mnemonic and:
 4. Get incoming and outgoing transactions and flag an example deposit.
 
 5. Send 1 sat of L-BTC to an address.
+
+The example also shows how to create a new wallet.
