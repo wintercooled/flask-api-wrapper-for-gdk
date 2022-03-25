@@ -44,6 +44,16 @@ class GDKWrapper:
         return balance
 
 
+    def get_transactions(mnemonic):
+        try:
+            gdk.init({})
+        except:
+            pass
+        wallet = gdk_wallet.login_with_mnemonic(mnemonic)
+        transactions = wallet.get_wallet_transactions()
+        return transactions
+
+
     def get_new_address(mnemonic):
         try:
             gdk.init({})
@@ -52,6 +62,26 @@ class GDKWrapper:
         wallet = gdk_wallet.login_with_mnemonic(mnemonic)
         address = wallet.get_new_address()
         return address
+
+
+    def get_block_height(mnemonic):
+        try:
+            gdk.init({})
+        except:
+            pass
+        wallet = gdk_wallet.login_with_mnemonic(mnemonic)
+        block_height = wallet.fetch_block_height()
+        return block_height
+
+
+    def send_to_address(mnemonic, sat_amount, asset_id, destination_address):
+        try:
+            gdk.init({})
+        except:
+            pass
+        wallet = gdk_wallet.login_with_mnemonic(mnemonic)
+        tx_hash = wallet.send_to_address(sat_amount, asset_id, destination_address)
+        return tx_hash
 
 
 class gdk_wallet:
@@ -210,7 +240,7 @@ class gdk_wallet:
         # the returned data.
         chain_block_height = self.fetch_block_height()
         # We'll use possible statuses of UNCONFIRMED, CONFIRMED, FINAL.
-        confirmed_status = None
+        confirmation_status = None
         depth_from_tip = 0
         all_txs = []
         index = 0

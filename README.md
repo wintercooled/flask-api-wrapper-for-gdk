@@ -4,14 +4,15 @@ languages.
 
 ## NOTE ON THIS VERSION OF THE API
 
-This example is currently work in progress. More endpoints will be added.
-
 The current API includes the endpoints below:
 
 ```
 /api/v1/wallet/create
 /api/v1/wallet/balance
 /api/v1/wallet/new-address
+/api/v1/wallet/transactions
+/api/v1/wallet/send-to-address
+/api/v1/block-height
 ```
 
 There are also a few test endpoints for permissions:
@@ -24,6 +25,15 @@ There are also a few test endpoints for permissions:
 You can add more endpoints by wrapping the functions in the `gdk_wallet` class
 within the GDKWallet class and making those callable from the API routes
 provided through `api.py`.
+
+If the method does not exist in `gdk_wallet` class and is available through the
+GDK code you will need to add it yourself first. GDK README and reference
+documentation:
+
+[https://github.com/Blockstream/gdk](https://github.com/Blockstream/gdk)
+
+[https://gdk.readthedocs.io/en/latest/](https://gdk.readthedocs.io/en/latest/)
+
 
 ## Installation and dependancies
 
@@ -75,36 +85,30 @@ To run:
 python api.py
 ```
 
-API (debug mode) for our example API call is available if you visit:
+To check the API is running (debug mode) for our example API visit:
 
 http://127.0.0.1:5000/api/v1/example_no_auth
 
 Visiting the web page above makes an API call to the `api/v1/example_no_auth`
-route, which calls GDK and creates a new wallet and returns the GAID as JSON.
+route, and returns JSON:
 
-The API should be callable via NodeJS etc by making the API call.
+```
+{
+    'example_key': 'example_value'
+}
+```
+
+The API should be callable via NodeJS etc by making http requests (GET, POST).
 
 Permission to cal the API is protected by the API requiring an authorization
 token in the request's header. Set these within `config.py` and add more
 permission roles in `api.py` if nedded and include the token in `config.py`.
-Only get and post permissions are included here.
-
-## Adding more GDK function calls yourself
-
-Add new calls to GDKWrapper and make calls to methods in the `gdk_wallet` class.
-
-If the method does not exist in `gdk_wallet` class and is available through the
-GDK code you will need to add it yourself first. GDK README and reference
-documentation:
-
-[https://github.com/Blockstream/gdk](https://github.com/Blockstream/gdk)
-
-[https://gdk.readthedocs.io/en/latest/](https://gdk.readthedocs.io/en/latest/)
+Only get and post permissions are included here by way of example.
 
 ## Configuration for Liquid environment
 
-In config.py, edit the NETWORK_NAME variable's value to switch between test and
-live Liquid networks.
+In config.py, edit the NETWORK_NAME variable's value to switch between test
+(`'testnet-liquid'`) and live (`'liquid'`) Liquid networks.
 
 ## Testing
 
@@ -116,4 +120,16 @@ python tester.py
 ```
 
 The test file will sign into a wallet that has already been created using its
-mnemonic and get the wallet's balance and a new address.
+mnemonic and:
+
+1. Get the wallet's balance.
+
+2. Get a new deposit address and show what data needs persisting.
+
+3. Get some network info (block height).
+
+4. Get incoming and outgoing transactions and flag an example deposit.
+
+5. Send 1 sat of L-BTC to an address.
+
+The example also shows how to create a new wallet.

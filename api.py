@@ -8,6 +8,7 @@ app = flask.Flask(__name__)
 app.config.from_object(Config)
 app.config["DEBUG"] = True
 
+AUTH_ERROR = {'error': 'Invalid or missing header Authorization token'}
 
 ################################
 # HELPER FUNCTIONS
@@ -28,6 +29,19 @@ def can_post(headers):
     if token and token == post_token:
         return True
     return False
+
+
+def mnemonic_check(data):
+    errors = None
+    required_keys = {
+        'mnemonic',
+    }
+
+    if not required_keys.issubset(set(data.keys())):
+        errors = { 'errors': [{'error': 'mnemonic is required'}] }
+        return None, jsonify(errors)
+    mnemonic = data.get('mnemonic', None)
+    return mnemonic, errors
 
 
 ################################
@@ -58,7 +72,7 @@ def api_example_auth():
 
         return jsonify(example)
     else:
-        return {'error': 'Invalid or missing header Authorization token'}
+        return AUTH_ERROR
 
 
 @app.route('/api/v1/wallet/create', methods=['GET'])
@@ -74,54 +88,80 @@ def wallet_create():
         }
         return jsonify(wallet_json)
     else:
-        return {'error': 'Invalid or missing header Authorization token'}
+        return AUTH_ERROR
 
 
 @app.route('/api/v1/wallet/balance', methods=['POST'])
 def wallet_balance():
     if can_post(request.headers):
         data = request.get_json()
-        errors = { 'errors': [] }
-
-        # All required keys present?
-        required_keys = {
-            'mnemonic',
-        }
-
-        if not required_keys.issubset(set(data.keys())):
-            errors['errors'].append({'error': 'mnemonic is required'})
-            return jsonify(errors)
-
-        mnemonic = data.get('mnemonic', None)
-
-        balance = GDKWrapper.get_balance(mnemonic)
-        return jsonify(balance)
+        mnemonic, errors = mnemonic_check(data)
+        if mnemonic:
+            balance = GDKWrapper.get_balance(mnemonic)
+            return jsonify(balance)
+        else:
+            return errors
     else:
-        return {'error': 'Invalid or missing header Authorization token'}
+        return AUTH_ERROR
 
 
 @app.route('/api/v1/wallet/new-address', methods=['POST'])
 def wallet_new_address():
     if can_post(request.headers):
         data = request.get_json()
-        errors = { 'errors': [] }
-
-        # TODO - make the mnemonic check into a function called from the other routes here.
-        # All required keys present?
-        required_keys = {
-            'mnemonic',
-        }
-
-        if not required_keys.issubset(set(data.keys())):
-            errors['errors'].append({'error': 'mnemonic is required'})
-            return jsonify(errors)
-
-        mnemonic = data.get('mnemonic', None)
-
-        address = GDKWrapper.get_new_address(mnemonic)
-        return jsonify(address)
+        mnemonic, errors = mnemonic_check(data)
+        if mnemonic:
+            address = GDKWrapper.get_new_address(mnemonic)
+            return jsonify(address)
+        else:
+            return errors
     else:
-        return {'error': 'Invalid or missing header Authorization token'}
+        return AUTH_ERROR
+
+
+@app.route('/api/v1/wallet/transactions', methods=['POST'])
+def wallet_transactions():
+    if can_post(request.headers):
+        data = request.get_json()
+        mnemonic, errors = mnemonic_check(data)
+        if mnemonic:
+            transactions = GDKWrapper.get_transactions(mnemonic)
+            return jsonify(transactions)
+        else:
+            return errors
+    else:
+        return AUTH_ERROR
+
+
+@app.route('/api/v1/wallet/send-to-address', methods=['POST'])
+def send_to_address():
+    if can_post(request.headers):
+        data = request.get_json()
+        mnemonic, errors = mnemonic_check(data)
+        if mnemonic:
+            sat_amount = data.get('sat_amount', None)
+            asset_id = data.get('asset_id', None)
+            destination_address = data.get('destination_address', None)
+            tx_hash = GDKWrapper.send_to_address(mnemonic, sat_amount, asset_id, destination_address)
+            return jsonify({'tx_hash': tx_hash})
+        else:
+            return errors
+    else:
+        return AUTH_ERROR
+
+
+@app.route('/api/v1/block-height', methods=['POST'])
+def block_height():
+    if can_post(request.headers):
+        data = request.get_json()
+        mnemonic, errors = mnemonic_check(data)
+        if mnemonic:
+            block_height = GDKWrapper.get_block_height(mnemonic)
+            return jsonify({'block_height': block_height})
+        else:
+            return errors
+    else:
+        return AUTH_ERROR
 
 
 app.run()
