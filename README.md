@@ -2,7 +2,9 @@
 
 [GDK](https://github.com/Blockstream/gdk) itself cannot be compiled to run in a web browser.
 
-This Flask API wraps GDK function calls so it can be used by other languages. By running the API you can indirectly call GDK functions from the web (e.g. JavaScript) using http requests.
+This Flask API wraps GDK function calls so it can be used by other languages.
+
+By running the API you can indirectly call GDK functions from Node.js, JavaScript etc using http requests.
 
 A `Node.js` example showing how to make client calls to the API is provided in `example_client_nodejs.js`.
 
@@ -22,7 +24,7 @@ Rememeber than you must amend the authorization tokens in config.py so nobody el
 knows what they are! Then amend them in the `example_client_*` files so that they match.
 
 
-## NOTE ON THIS VERSION OF THE API
+## Note on this version of the API
 
 The current API includes the following endpoints:
 
@@ -128,14 +130,12 @@ Permission to call the API is protected by the API requiring an authorization
 token in the request's header. Set these within `config.py`. You can add more
 permission roles in `api.py` if nedded and then include the token in `config.py`.
 
-WARNING: Remember than you must amend the authorization tokens in config.py so nobody else
+WARNING: Remember than you must amend the authorization tokens in `config.py` so nobody else
 knows what they are!
-
-Only get and post permissions are included here by way of example.
 
 ## Configuration for Liquid environment
 
-In config.py, edit the NETWORK_NAME variable's value to switch between test
+In `config.py`, edit the `NETWORK_NAME` variable's value to switch between test
 (`'testnet-liquid'`) and live (`'liquid'`) Liquid networks.
 
 ## Testing
@@ -164,4 +164,6 @@ The example also shows how to create a new wallet if you do not want to use the
 example one, which you probably dont. You can get testnet L-BTC and a testnet
 issued asset from this [Liquid testnet faucet site](https://liquidtestnet.com/faucet)
 which will help with your testing and development.
+
+You can amend the `Node.js` example `example_client_nodejs.js` to match what is in the `example_client_python.py` example (in terms of calls and handling returned data) if you want to develop using `Node.js` as the `Python` example is a handy reference for what to call and what will be returned.
 
