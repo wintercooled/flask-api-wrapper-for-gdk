@@ -4,15 +4,22 @@
 
 This Flask API wraps GDK function calls so it can be used by other languages. By running the API you can indirectly call GDK functions from the web (e.g. JavaScript) using http requests.
 
-An example showing how to make client calls to the API is provided in `example_client_python.py`.
+A `Node.js` example showing how to make client calls to the API is provided in `example_client_nodejs.js`.
 
-`JavaScript` or `Node.js` examples can be created using the above as a reference. It shows how to set headers, how to call the API and how to handle responses.
+`JavaScript` examples can be created using the above as a reference. It shows how to set headers, how to call the API and how to handle responses.
+
+A `Python` example showing how to make client calls to the API is provided in `example_client_python.py`.
 
 GDK README and reference documentation:
 
 [https://github.com/Blockstream/gdk](https://github.com/Blockstream/gdk)
 
 [https://gdk.readthedocs.io/en/latest/](https://gdk.readthedocs.io/en/latest/)
+
+## WARNING
+
+Rememeber than you must amend the authorization tokens in config.py so nobody else
+knows what they are! Then amend them in the `example_client_*` files so that they match.
 
 
 ## NOTE ON THIS VERSION OF THE API
@@ -120,6 +127,9 @@ The API should be callable via `Node.js` and `JavaScript` etc by making http req
 Permission to call the API is protected by the API requiring an authorization
 token in the request's header. Set these within `config.py`. You can add more
 permission roles in `api.py` if nedded and then include the token in `config.py`.
+
+WARNING: Remember than you must amend the authorization tokens in config.py so nobody else
+knows what they are!
 
 Only get and post permissions are included here by way of example.
 
