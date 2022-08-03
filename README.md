@@ -2,13 +2,13 @@
 
 [GDK](https://github.com/Blockstream/gdk) itself cannot be compiled to run in a web browser.
 
-This Flask API wraps GDK function calls so it can be used by other languages.
+This `Flask` API wraps GDK function calls so it can be used by other languages.
 
-By running the API you can indirectly call GDK functions from Node.js, JavaScript etc using http requests.
+By running the API you can indirectly call GDK functions from `Node.js`, `JavaScript` etc using simple http requests. Examples of how to add authentication checks to the API are also included.
 
-A `Node.js` example showing how to make client calls to the API is provided in `example_client_nodejs.js`.
+There is a `Node.js` example which shows how to make authenticated client calls against the API in `example_client_nodejs.js`.
 
-`JavaScript` examples can be created using the above as a reference. It shows how to set headers, how to call the API and how to handle responses.
+`JavaScript` examples can be created using the above as a reference, how to set headers, authenticate, make calls to the API, and handle responses.
 
 A `Python` example showing how to make client calls to the API is provided in `example_client_python.py`.
 
@@ -38,10 +38,10 @@ The current API includes the following endpoints:
 ```
 
 You can add more endpoints by simply wrapping the functions in the `gdk_wallet` class
-within the GDKWallet class and making those callable from the API routes
+within the `GDKWallet` class and making those callable from the API routes
 provided through `api.py`.
 
-There are also a few test endpoints for permissions:
+There are also a few endpoints added purely to allow for testing calls to endpoints that either require or do not require client authentication:
 
 ```
 /api/v1/example and /api/v1/example_no_auth
@@ -130,7 +130,9 @@ Permission to call the API is protected by the API requiring an authorization
 token in the request's header. Set these within `config.py`. You can add more
 permission roles in `api.py` if nedded and then include the token in `config.py`.
 
-WARNING: Remember than you must amend the authorization tokens in `config.py` so nobody else
+## ANOTHER WARNING
+
+Remember than you must also amend the authorization tokens in `config.py` so nobody else
 knows what they are!
 
 ## Configuration for Liquid environment
